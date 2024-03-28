@@ -4,8 +4,7 @@ During this exercise, you will:
 
 - Define and handle a Signal
 - Retrieve a handle on the Workflow to Signal
-- Send an external Signal
-- Use a Temporal Client to submit execution requests for both Workflows
+- Use a Temporal Client to send the Signal
 
 Make your changes to the code in the `practice` subdirectory (look for
 `TODO` comments that will guide you to where you should make changes to
@@ -14,63 +13,49 @@ the complete version in the `solution` subdirectory.
 
 ## Part A: Defining a Signal
 
-In this part of the exercise, you will define your Signal.
+In this part of the exercise, you will define a Signal named `submit_greeting`, and let the Workflow know what to do when it encounters the Signal.
 
-1. Edit the `workflow.go` file.
-2. Between the `import` and `Workflow()` blocks, define a new Signal type `struct` named `FulfillOrderSignal`. It should contain a single variable, a `bool`, named `Fulfilled`.
+1. Edit the `workflow.py` file.
+2. `workflow.py` currently contains a Workflow definition that includes one Signal function, `exit()`. The Workflow runs a blocking `while True` loop that will cause it to wait for either the `exit()` Signal or another `submit_greeting()` Signal before doing anything. Within the Workflow definition, just above the `exit()` Signal function, add a Signal function for `submit_greeting()`. It should take an additional string argument called `name`. When the signal is received, it should call `await self._pending_greetings.put(name)`. You can use the `exit()` Signal function below as a reference.
 3. Save the file.
 
-## Part B: Handling the Signal
+## Part B: Getting a Handle on your Workflow
 
-You will now handle the Signal you defined in part A, and let the Workflow know what to do when it encounters the `FulfillOrderSignal`.
+In this part of the exercise, you will create another Temporal client that sends a Signal. `signalclient.py` currently contains a near-empty Temporal client -- it looks like a Starter or a Worker, but it does not register any Workflows or do anything. You will use this client to send a Signal.
 
-1. In `workflow.go`, locate the `signalChan.Receive()` call. This will block the Workflow until a Signal is received. 
-2. Wrap the `ExecuteActivity()` call and the `logger.Info()` call in a test for `if signal.Fulfilled == true`.
+1. Edit the `signalclient.py` file.
+2. Within the `main()` function, directly after the `Client.connect()` call, call `client.get_workflow_handle()` using the Workflow ID from `workflow.py` to get a Handle on this Workflow. Return it to a variable like `handle`. 
 3. Save the file.
 
-## Part C: Import the Signal type into your Signal Client
+## Part C: Signaling Your Workflow
 
-In this part of the exercise, you will create another Temporal client that sends a Signal. `signalclient/main.go` currently contains a near-empty Temporal client -- it looks like a Starter or a Worker, but it does not register any Workflows or do anything. You will use this client to send a Signal.
+Now you will add the `handle.signal()` call itself.
 
-1. Edit the `signalclient/main.go` file.
-2. Within the `main()` block, use the `FullfillOrderSignal` struct type from the `signals` module (i.e., the `workflow.go` file in the parent directory) to create an instance of `FulfillOrderSignal` that contains `Fulfilled: true`.
-3. Save the file.
+1. Continue editing the `signalclient.py` file.
+2. After the line where you obtain your Workflow `handle` by running `get_workflow_handle()`, add another line with a call to `handle.signal()`. It should call the `submit_greeting` signal with an additional username argument like `User 1`. Don't forget to call `handle.signal()` with `await` because it is an asychronous function.
+3. On the next line, add a call to `time.sleep(1)` to make this client wait before sending another signal.
+4. Finally, add a call to `await handle.signal("exit")`. This will send the other Signal type handled by this Workflow — `exit` — and cause it to return.
 
-## Part D: Signaling Your Workflow
-
-Now you will add the `SignalWorkflow()` call itself.
-
-1. Continue editing the `signalclient/main.go` file.
-2. Within the `main()` block, after you create an instance of `FulfillOrderSignal`, call `SignalWorkflow()` to send a Signal to your running Workflow. It needs, as arguments, `context.Background()`, your workflow ID, your run ID (which can be an empty string), the name of the signal, and the signal instance. It should assign its result to `err` so that it can be checked in the next line.
-4. Save the file.
-
-## Part E: Start Your Workflow
+## Part D: Start Your Workflow
 
 At this point, you can run your Workflow. It should run normally but wait to receive a Signal.
 
-1. In one terminal, navigate to the `worker` subdirectory and run `go run main.go`.
-2. In another terminal, navigate to the `starter` subdirectory and run `go run main.go`. You should receive some logging from your Worker along these lines:
+1. In a terminal window, run `python workflow.py`. This file contains both a Temporal Worker and a Workflow definition that will execute immediately after starting the Worker. You will receive some logging output:
 
 ```
-2024/03/14 08:48:10 INFO  No logger configured for temporal client. Created default one.
-2024/03/14 08:48:10 INFO  Started Worker Namespace default TaskQueue signals WorkerID 43388@Omelas@
-2024/03/14 08:48:21 INFO  Signal workflow started Namespace default TaskQueue signals WorkerID 43388@Omelas@ WorkflowType Workflow WorkflowID signals RunID 905330da-9c0f-490e-bd48-c6a9e8840f7a Attempt 1 input Plain text input
+Running workflow.
 ```
 
-3. Your Workflow will not return as you added a blocking Signal call. In the next step, you will Signal your workflow.
+2. Your Workflow will not return as you added a blocking Signal call. In the next step, you will Signal your workflow.
 
-## Part F: Send Your Signal
+## Part E: Send Your Signal
 
-1. In a third terminal, navigate to the `signalclient` subdirectory and run `go run main.go`. It will send a Signal to your Workflow. This should cause your Workflow to return, and the `Signal workflow completed` call to be logged in the terminal running your Worker:
+1. In a second terminal, run `python signalclient.py`. It will send a Signal to your Workflow. This should cause your Workflow to return with a result, containing the `User 1` argument from `signalclient.py`.
 
 ```
-2024/03/14 08:48:37 INFO  Signal workflow completed. Namespace default TaskQueue signals WorkerID 43388@Omelas@ WorkflowType Workflow WorkflowID signals RunID 905330da-9c0f-490e-bd48-c6a9e8840f7a Attempt 1 result Received Plain text input
+Result: ['Hello, User 1']
 ```
 
 2. You have successfully sent a Signal from a Temporal Client to a running Workflow.
 
 ### This is the end of the exercise.
-
-
-Running workflow.
-Result: ['Hello, Bob']
