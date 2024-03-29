@@ -3,63 +3,45 @@
 During this exercise, you will:
 
 - Retrieve a task token from your Activity execution
-Throw an `ErrResultPending` to indicate that the Activity is waiting for an external completion.
-- Use another Temporal Client to communicate the result of the asynchronous Activity back to the Workflow
+- Call `activity.raise_complete_async()` to indicate that the Activity is waiting for an external completion.
+- Use another Activity method to communicate the result of the asynchronous Activity back to the Workflow
 
 Make your changes to the code in the `practice` subdirectory (look for `TODO` comments that will guide you to where you should make changes to the code). If you need a hint or want to verify your changes, look at the complete version in the `solution` subdirectory.
 
 ## Part A: Retrieving the Task Token
 
-1. Edit the `workflow.go` file. In the `Activity()` definition, add a call to `activity.GetInfo()` that returns an `activityInfo` object.
-2. From that object, extract `activityInfo.TaskToken`. To asynchronously complete an Activity, you need to store this token outside of this Workflow, so that you can call it from another Temporal Client. The most straightforward way to do this is to encode it to hexadecimal or base64 and log it to your terminal, so add a call like `logger.Info("Activity", "taskToken", hex.EncodeToString(taskToken))`.
-3. Save the file.
+1. `workflow.go` is the only file in this Exercise — it contains a Worker, a Workflow, an Activity with two methods, and a Starter, all in one. This is intended to showcase how you can consolidate your Temporal logic using the Python SDK. Edit `workflow.go`.
+2. Everything in this file is already complete outside of the Activity definition, which contains two different methods, `compose_greeting()` and `complete_greeting()`. Your Workflow calls `compose_greeting()`, which can then call `complete_greeting()` as a subtask. To do that, use `asyncio.create_task()`.
+3. `complete_greeting()` requires a Task Token as an argument, so make sure to obtain it as `activity.info().task_token`.
+4. Save the file.
 
 ## Part B: Set Your Activity to Return `ErrResultPending`
 
-1. Continue editing the same Activity definition in the `workflow.go` file. You need to add a `return` statement that returns a special kind of error, `activity.ErrResultPending`, that will Temporal that the Activity has not failed but will be completed asynchronously.
-2. Note that the Workflow's `StartToCloseTimeout` has been lengthened to 300 seconds for this exercise. Activities can still time out if they are running in the background.
+1. Continue editing the same Activity definition in the `workflow.go` file.
+2. To indicate that it will be completing asynchronously, instead of returning, `compose_greeting()` should call `activity.raise_complete_async()`.
 3. Save the file.
 
 ## Part C: Configure a Client to send CompleteActivity
 
-1. Now you can edit the `completionclient/main.go` file to call `CompleteActivity`. The first thing you'll need to do is add some way of supplying the `taskToken` specific to the Activity you are trying to complete at runtime. In a production system, you might store and retrieve the token from a database, but for now, you can configure this Client to accept it as an additional argument by adding `flag` parsing to the `main()` block:
-
-```go
-var taskToken string
-flag.StringVar(&taskToken, "tasktoken", "", "Task Token of Activity to Complete")
-flag.Parse()
-decoded, err := hex.DecodeString(taskToken)
-if err != nil {
-   log.Fatalln("Unable to decode token", err)
-}
-```
-
-2. Next, add the call to `CompleteActivity()`. This function requires a variable to write its result to, so provide something like `var result string`. Then, add a call to `c.CompleteActivity(context.Background(), decoded, result, err)`. Don't forget to add any error handling as needed.
+1. Now, edit the `complete_greeting()` Activity method. The `heartbeat_timeout` configured in your call to `workflow.execute_activity_method()` is 2 seconds. Since an Activity that is completing asynchronously may run for a long time, it should send regular Heartbeats to indicate that it has not failed. With a Heartbeat timeout of 2 seconds, you should add a loop to send a Heartbeat every 1 second. To do this, use `handle.heartbeat()` and `asyncio.sleep(1)`.
+2. After several Heartbeats, call `handle.complete()` to complete the Activity.
 3. Save the file.
 
 ## Part D: Running the Workflow and Completing it Asynchronously
 
-At this point, you can run your Workflow. As with the Signal Exercise, the Workflow will not return on its own -- in this case, because your Activity is set to complete asynchronously, and will wait to receive `CompleteActivity()`.
-
-1. In one terminal, navigate to the `worker` subdirectory and run `go run main.go`.
-2. In another terminal, navigate to the `starter` subdirectory and run `go run main.go`. Your work will produce some logging, eventually including your `taskToken`:
+At this point, you can run your Workflow. Because it is all contained in `workflow.py`, you only need to run `python workflow.py`. You should receive the following output:
 
 ```
-2024/03/14 15:14:00 INFO  Activity Namespace default TaskQueue async WorkerID 22396@Omelas@ ActivityID 5 ActivityType Activity Attempt 1 WorkflowType Workflow WorkflowID async RunID 0c3cb022-042f-4437-b021-a6cf2a4afe1b taskToken 0a2461613733613533322d363337362d346130332d613563342d36626134626437306139623312056173796e631a2430633363623032322d303432662d343433372d623032312d61366366326134616665316220052801320135420841637469766974794a08080110be80401801
-```
-
-3. You can now use this token to send a `CompleteActivity()` call from another client. In a third terminal, navigate to the `completeclient` subdirectory and run `go run main.go --tasktoken [tasktoken]`, pasting the token from the previous step. This will cause your Activity to return and your Workflow to successfully complete. The terminal running your Worker process should now show `workflow completed`:
-
-```
-2024/03/14 15:15:45 INFO  Async workflow completed. Namespace default TaskQueue async WorkerID 41996@Omelas@ WorkflowType Workflow WorkflowID async RunID cf865c9f-2487-47a3-84c4-fd0c6da6ee6c Attempt 1 result
-```
-
-### This is the end of the exercise.
-
-
 Running workflow.
 Completing activity asynchronously
 Waiting one second...
 Waiting one second...
 Waiting one second...
 Activity complete!
+```
+
+You have successfully demonstrated asynchronous activity completion.
+
+### This is the end of the exercise.
+
+
