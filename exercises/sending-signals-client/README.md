@@ -1,4 +1,4 @@
-## Exercise #1: Sending an External Signal
+## Exercise #2: Sending a Signal from a Client
 
 During this exercise, you will:
 

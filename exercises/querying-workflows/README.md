@@ -1,4 +1,4 @@
-# Exercise #2: Querying Workflows
+# Exercise #3: Querying Workflows
 
 During this exercise, you will:
 
@@ -16,7 +16,7 @@ the complete version in the `solution` subdirectory.
 
 In this part of the exercise, you will define your Query.
 
-1. Edit the `workflow.py` file. This is the same completed `workflow.py` from the previous exercise, containing your two Signals. A new variable called `self._current_state` that provides information about the Workflow Execution is also now updated in several places. You will add a Query that returns the status of this variable.
+1. Edit the `workflow.py` file. The Workflow runs a blocking `while True` loop that will cause it to wait for either the `exit()` Signal or a `submit_greeting()` Signal before doing anything. A variable called `self._current_state` that provides information about the Workflow Execution is also updated in several places. You will add a Query that returns the status of this variable.
 2. Anywhere within the Workflow definition (for example, just before your Signal functions), add a Query function called `current_state_query()`. It should be annotated with `@workflow.query` and `return self._current_state`.
 3. Save the file.
 
@@ -39,7 +39,7 @@ At this point, you can run your Workflow. Because it is the same Workflow from t
 Running workflow.
 ```
 
-1. You can now Query your Workflow. In another terminal, run `python queryclient.py`. It will send a Query to your Workflow, which will immediately return the Query result:
+2. You can now Query your Workflow. In another terminal, run `python queryclient.py`. It will send a Query to your Workflow, which will immediately return the Query result:
 
 ```
 "waiting for signal"
@@ -64,6 +64,14 @@ Query result:
 ["waiting for signal"]
 ```
 
-Now you can send a Signal to your Workflow as in the previous exercise so it completes successfully, or just terminate it.
+Now you can send a Signal to your Workflow so it completes successfully, or just terminate it.
+
+## Part E: Send Your Signal
+
+In the terminal you ran your query in, run `python signalclient.py`. It will send a Signal to your Workflow. This should cause your Workflow to return with a result, containing the `User 1` argument from `signalclient.py`.
+
+```
+Result: ['Hello, User 1']
+```
 
 ### This is the end of the exercise.
