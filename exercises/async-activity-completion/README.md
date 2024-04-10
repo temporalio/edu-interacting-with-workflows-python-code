@@ -10,14 +10,14 @@ Make your changes to the code in the `practice` subdirectory (look for `TODO` co
 
 ## Part A: Retrieving the Task Token
 
-1. `workflow.go` is the only file in this Exercise — it contains a Worker, a Workflow, an Activity with two methods, and a Starter, all in one. This is intended to showcase how you can consolidate your Temporal logic using the Python SDK. Edit `workflow.go`.
+1. `workflow.py` is the only file in this Exercise — it contains a Worker, a Workflow, an Activity with two methods, and a Starter, all in one. This is intended to showcase how you can consolidate your Temporal logic using the Python SDK. Edit `workflow.py`.
 2. Everything in this file is already complete outside of the Activity definition, which contains two different methods, `compose_greeting()` and `complete_greeting()`. Your Workflow calls `compose_greeting()`, which can then call `complete_greeting()` as a subtask. To do that, use `asyncio.create_task()`.
 3. `complete_greeting()` requires a Task Token as an argument, so make sure to obtain it as `activity.info().task_token`.
 4. Save the file.
 
 ## Part B: Set Your Activity to Return `ErrResultPending`
 
-1. Continue editing the same Activity definition in the `workflow.go` file.
+1. Continue editing the same Activity definition in the `workflow.py` file.
 2. To indicate that it will be completing asynchronously, instead of returning, `compose_greeting()` should call `activity.raise_complete_async()`.
 3. Save the file.
 
