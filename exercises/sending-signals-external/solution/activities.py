@@ -1,6 +1,6 @@
 from time import time
 
-from shared import Address, Bill, Distance, OrderConfirmation
+from shared import Address, Bill, Distance, OrderConfirmation, PizzaOrder
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
 
@@ -54,3 +54,29 @@ class PizzaOrderActivities:
         )
 
         return confirmation
+
+    @activity.defn
+    async def make_pizzas(self, pizza_order: PizzaOrder):
+        activity.logger.info(
+            f"Starting to make pizzas for order: {pizza_order.order_number}" 
+        )
+
+        for item in pizza_order.items:
+            activity.logger.info(
+                f"Making pizza: {item.description}"
+            )
+            # Simulate the time taken to make a pizza.
+        
+        activity.logger.info(
+            f"All pizzas for order {pizza_order.order_number} are ready!"
+        )
+
+    @activity.defn
+    async def deliver_pizzas(self, pizza_order: PizzaOrder):
+        activity.logger.info(
+            f"Starting delivery {pizza_order.order_number} to {pizza_order.address}"
+        )
+        # Simulate the time to make delivery
+        activity.logger.info(
+            f"{pizza_order.order_number} delivered."
+        )

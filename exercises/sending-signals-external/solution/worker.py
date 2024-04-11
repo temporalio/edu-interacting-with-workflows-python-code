@@ -5,7 +5,7 @@ from activities import PizzaOrderActivities
 from shared import TASK_QUEUE_NAME
 from temporalio.client import Client
 from temporalio.worker import Worker
-from workflow import PizzaOrderWorkflow
+from workflow import PizzaOrderWorkflow, FulfillOrderWorkflow
 
 
 async def main():
@@ -17,8 +17,8 @@ async def main():
     worker = Worker(
         client,
         task_queue=TASK_QUEUE_NAME,
-        workflows=[PizzaOrderWorkflow],
-        activities=[activities.get_distance, activities.send_bill],
+        workflows=[PizzaOrderWorkflow,FulfillOrderWorkflow],
+        activities=[activities.get_distance, activities.send_bill, activities.make_pizzas, activities.deliver_pizzas],
     )
     logging.info(f"Starting the worker....{client.identity}")
     await worker.run()

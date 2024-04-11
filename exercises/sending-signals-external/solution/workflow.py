@@ -9,9 +9,11 @@ with workflow.unsafe.imports_passed_through():
     from activities import PizzaOrderActivities
     from shared import Bill, OrderConfirmation, PizzaOrder
 
-
 @workflow.defn
 class PizzaOrderWorkflow:
+    def __init__(self) -> None:
+        self._pending_confirmation: asyncio.Queue[str] = asyncio.Queue()
+
     @workflow.run
     async def order_pizza(self, order: PizzaOrder) -> OrderConfirmation:
         workflow.logger.info(f"order_pizza workflow invoked with {input}")
@@ -35,22 +37,49 @@ class PizzaOrderWorkflow:
 
         workflow.logger.info(f"distance is {distance.kilometers}")
 
-        # Use a short timer duration here to simulate the passage of time
-        # while avoiding delaying the exercise
+        while True:
+            await workflow.wait_condition(
+                lambda: not self._pending_confirmation.empty() or self._exit
+            )
 
-        await asyncio.sleep(3)
+            while not self._pending_confirmation.empty():
+                bill = Bill(
+                    customer_id=order.customer.customer_id,
+                    order_number=order.order_number,
+                    description="Pizza order",
+                    amount=total_price,
+                )
+                confirmation = await workflow.execute_activity_method(
+                    PizzaOrderActivities.send_bill,
+                    bill,
+                    start_to_close_timeout=timedelta(seconds=5),
+                )
+                return confirmation
 
-        bill = Bill(
-            customer_id=order.customer.customer_id,
-            order_number=order.order_number,
-            description="Pizza order",
-            amount=total_price,
-        )
+    @workflow.signal
+    async def fulfill_order_signal(self, success: bool) -> None:
+        await self._pending_confirmation.put(True)
 
-        confirmation = await workflow.execute_activity_method(
-            PizzaOrderActivities.send_bill,
-            bill,
+
+@workflow.defn
+class FulfillOrderWorkflow:
+    @workflow.run
+    async def fulfill_order(self, order: PizzaOrder) -> OrderConfirmation:
+        workflow.logger.info(f"fulfill_order workflow invoked with {input}")
+
+        await workflow.execute_activity_method(
+            PizzaOrderActivities.make_pizzas,
+            PizzaOrder,
             start_to_close_timeout=timedelta(seconds=5),
         )
 
-        return confirmation
+        await workflow.execute_activity_method(
+            PizzaOrderActivities.deliver_pizzas,
+            PizzaOrder,
+            start_to_close_timeout=timedelta(seconds=5),
+        )
+
+        handle = workflow.get_external_workflow_handle("signals")
+        await handle.signal("fulfill_order_signal", True)
+
+        return None
