@@ -58,7 +58,8 @@ class PizzaOrderWorkflow:
 
     @workflow.signal
     async def fulfill_order_signal(self, success: bool) -> None:
-        await self._pending_confirmation.put(True)
+        if success == True:
+            await self._pending_confirmation.put(True)
 
 
 @workflow.defn

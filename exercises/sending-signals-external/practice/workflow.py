@@ -56,9 +56,11 @@ class PizzaOrderWorkflow:
                 )
                 return confirmation
 
-    @workflow.signal
-    async def fulfill_order_signal(self, success: bool) -> None:
-        await self._pending_confirmation.put(True)
+    # TODO Part A: Add a `fulfill_order_signal()` function to receive the Signal.
+    # It should be decorated with `@workflow.signal` and accept an
+    # additional boolean argument called `success`. When the signal is received,
+    # if `success==True`, it should call
+    # `self._pending_confirmation.put(True)
 
 
 @workflow.defn
@@ -79,7 +81,10 @@ class FulfillOrderWorkflow:
             start_to_close_timeout=timedelta(seconds=5),
         )
 
-        handle = workflow.get_external_workflow_handle("pizza-workflow-order-XD001")
-        await handle.signal("fulfill_order_signal", True)
+        # TODO Part B: Use `workflow.get_external_workflow_handle()` to get a
+        # handle on the PizzaOrderWorkflow, so you can Signal it.
+
+        # TODO Part C: Use `handle.signal()` to send a Signal.
+        # Don't forget to match the Signal name and the `True` argument.
 
         return None
