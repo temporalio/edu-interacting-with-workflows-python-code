@@ -26,7 +26,7 @@ In this part of the exercise, you will create another Temporal client that sends
 
 1. Edit the `queryclient.py` file. This time, the `handle` has been obtained for you. 
 2. Immediately after the line that obtains the `handle`, use `handle.query()` to send a query. You can import the Query type from `workflow.py` — note that `from workflow import MyWorkflow` is included at the imports at the start of this file. Save the query result in a variable like `result`.
-3. Immediately after that, add some of logging the Query result. For this exercise, a `print()` statement is fine.
+3. Immediately after that, log the Query result. For this exercise, a `print()` statement is fine.
 4. Save the file.
 
 ## Part C: Running the Workflow and the Query
