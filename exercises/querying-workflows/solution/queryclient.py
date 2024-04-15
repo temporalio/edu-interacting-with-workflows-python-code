@@ -1,5 +1,4 @@
 import asyncio
-import time
 
 from temporalio.client import Client
 from workflow import MyWorkflow
