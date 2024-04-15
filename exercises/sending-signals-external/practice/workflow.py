@@ -16,7 +16,7 @@ class PizzaOrderWorkflow:
 
     @workflow.run
     async def order_pizza(self, order: PizzaOrder) -> OrderConfirmation:
-        workflow.logger.info(f"order_pizza workflow invoked with {input}")
+        workflow.logger.info(f"order_pizza workflow invoked")
 
         address = order.address
 
@@ -67,7 +67,7 @@ class PizzaOrderWorkflow:
 class FulfillOrderWorkflow:
     @workflow.run
     async def fulfill_order(self, order: PizzaOrder) -> OrderConfirmation:
-        workflow.logger.info(f"fulfill_order workflow invoked with {input}")
+        workflow.logger.info(f"fulfill_order workflow invoked")
 
         await workflow.execute_activity_method(
             PizzaOrderActivities.make_pizzas,
