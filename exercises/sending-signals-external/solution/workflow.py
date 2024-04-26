@@ -65,7 +65,7 @@ class PizzaOrderWorkflow:
 @workflow.defn
 class FulfillOrderWorkflow:
     @workflow.run
-    async def fulfill_order(self, order: PizzaOrder) -> OrderConfirmation:
+    async def fulfill_order(self, order: PizzaOrder):
         workflow.logger.info(f"fulfill_order workflow invoked")
 
         await workflow.execute_activity_method(
@@ -83,4 +83,4 @@ class FulfillOrderWorkflow:
         handle = workflow.get_external_workflow_handle("pizza-workflow-order-XD001")
         await handle.signal("fulfill_order_signal", True)
 
-        return None
+        return "orderFulfilled"

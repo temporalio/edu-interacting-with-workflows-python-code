@@ -66,7 +66,7 @@ class PizzaOrderWorkflow:
 @workflow.defn
 class FulfillOrderWorkflow:
     @workflow.run
-    async def fulfill_order(self, order: PizzaOrder) -> OrderConfirmation:
+    async def fulfill_order(self, order: PizzaOrder):
         workflow.logger.info(f"fulfill_order workflow invoked")
 
         await workflow.execute_activity_method(
@@ -87,4 +87,4 @@ class FulfillOrderWorkflow:
         # TODO Part C: Use `handle.signal()` to send a Signal.
         # Don't forget to match the Signal name and the `True` argument.
 
-        return None
+        return "orderFulfilled"

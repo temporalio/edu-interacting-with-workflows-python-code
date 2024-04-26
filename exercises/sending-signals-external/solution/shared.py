@@ -3,7 +3,7 @@ from typing import List
 
 TASK_QUEUE_NAME = "pizza-tasks"
 WORKFLOW_ID_PREFIX = "pizza-workflow-order-"
-FULFILLED_WORKFLOW_ID_PREFIX = "fulfilled-workflow-order-"
+FULFILLED_WORKFLOW_ID_PREFIX = "signal-fulfilled-order-"
 
 
 @dataclass

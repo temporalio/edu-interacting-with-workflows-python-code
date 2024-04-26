@@ -69,8 +69,8 @@ At this point, you can run your Workflows.
 
    ```
    ...
-   INFO:temporalio.activity:Starting delivery XD001 to Address(line1='741 Evergreen Terrace', line2='Apartment 221B', city='Albuquerque', state='NM', postal_code='87101') ({'activity_id': '2', 'activity_type': 'deliver_pizzas', 'attempt': 1, 'namespace': 'default', 'task_queue': 'pizza-tasks', 'workflow_id': 'fulfilled-workflow-order-XD001', 'workflow_run_id': 'a87ad640-65c4-478f-9c73-b0a47293148f', 'workflow_type': 'FulfillOrderWorkflow'})
-   INFO:temporalio.activity:XD001 delivered. ({'activity_id': '2', 'activity_type': 'deliver_pizzas', 'attempt': 1, 'namespace': 'default', 'task_queue': 'pizza-tasks', 'workflow_id': 'fulfilled-workflow-order-XD001', 'workflow_run_id': 'a87ad640-65c4-478f-9c73-b0a47293148f', 'workflow_type': 'FulfillOrderWorkflow'})
+   INFO:temporalio.activity:Starting delivery XD001 to Address(line1='741 Evergreen Terrace', line2='Apartment 221B', city='Albuquerque', state='NM', postal_code='87101') ({'activity_id': '2', 'activity_type': 'deliver_pizzas', 'attempt': 1, 'namespace': 'default', 'task_queue': 'pizza-tasks', 'workflow_id': 'signal-fulfilled-order-XD001', 'workflow_run_id': 'a87ad640-65c4-478f-9c73-b0a47293148f', 'workflow_type': 'FulfillOrderWorkflow'})
+   INFO:temporalio.activity:XD001 delivered. ({'activity_id': '2', 'activity_type': 'deliver_pizzas', 'attempt': 1, 'namespace': 'default', 'task_queue': 'pizza-tasks', 'workflow_id': 'signal-fulfilled-order-XD001', 'workflow_run_id': 'a87ad640-65c4-478f-9c73-b0a47293148f', 'workflow_type': 'FulfillOrderWorkflow'})
    INFO:temporalio.activity:send_bill invoked: customer: 8675309 amount: 2700 ({'activity_id': '2', 'activity_type': 'send_bill', 'attempt': 1, 'namespace': 'default', 'task_queue': 'pizza-tasks', 'workflow_id': 'pizza-workflow-order-XD001', 'workflow_run_id': '4c7007d9-402c-4eea-b890-cc12f048a3dc', 'workflow_type': 'PizzaOrderWorkflow'})
    ```
 
