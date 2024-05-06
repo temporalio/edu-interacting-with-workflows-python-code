@@ -10,10 +10,9 @@ Make your changes to the code in the `practice` subdirectory (look for `TODO` co
 
 ## Part A: Retrieving the Task Token
 
-1. `workflow.py` is the only file in this Exercise — it contains a Worker, a Workflow, an Activity with two methods, and a Starter, all in one. This is intended to showcase how you can consolidate your Temporal logic using the Python SDK. Edit `workflow.py`.
-2. Everything in this file is already complete outside of the Activity definition, which contains two different methods, `compose_greeting()` and `complete_greeting()`. Your Workflow calls `compose_greeting()`, which can then call `complete_greeting()` as a subtask. To do that, use `asyncio.create_task()`.
-3. `complete_greeting()` requires a Task Token as an argument, so make sure to obtain it as `activity.info().task_token`.
-4. Save the file.
+1. Edit `workflow.py`. Everything in this file is already complete outside of the Activity definition, which contains two different methods, `compose_greeting()` and `complete_greeting()`. Your Workflow calls `compose_greeting()`, which can then call `complete_greeting()` as a subtask. To do that, use `asyncio.create_task()`.
+2. `complete_greeting()` requires a Task Token as an argument, so make sure to obtain it as `activity.info().task_token`.
+3. Save the file.
 
 ## Part B: Set Your Activity to Return `ErrResultPending`
 
@@ -29,7 +28,8 @@ Make your changes to the code in the `practice` subdirectory (look for `TODO` co
 
 ## Part D: Running the Workflow and Completing it Asynchronously
 
-At this point, you can run your Workflow. Because it is all contained in `workflow.py`, you only need to run `python workflow.py`. You should receive the following output:
+1. At this point, you can run your Workflow. In one terminal, run `python worker.py`.
+2. In another terminal, run `python starter.py`. If you look at the terminal running your Worker, you should see the following output:
 
 ```
 Running workflow.

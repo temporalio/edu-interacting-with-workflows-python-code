@@ -1,10 +1,8 @@
 import asyncio
-import base64
 from typing import List
 
 from temporalio import activity, workflow
 from temporalio.client import Client
-from temporalio.worker import Worker
 from datetime import timedelta
 
 class GreetingComposer:
@@ -28,6 +26,7 @@ class GreetingComposer:
 
         # Complete using the handle
         await handle.complete()
+        print("Activity complete!")
 
 
 @workflow.defn
@@ -41,27 +40,3 @@ class MyWorkflow:
             start_to_close_timeout=timedelta(seconds=10),
             heartbeat_timeout=timedelta(seconds=2),
         )
-
-
-async def main():
-    # Start client
-    client = await Client.connect("localhost:7233")
-
-    # Run a worker for the workflow
-    composer = GreetingComposer(client)
-    async with Worker(
-        client,
-        task_queue="async",
-        workflows=[MyWorkflow],
-        activities=[composer.compose_greeting]
-    ):
-        result = await client.execute_workflow(
-            MyWorkflow.run,
-            id="async",
-            task_queue="async",
-        )
-        print("Activity complete!")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
