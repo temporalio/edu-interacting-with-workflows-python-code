@@ -1,7 +1,8 @@
 import asyncio
 
-from shared import TASK_QUEUE_NAME, WORKFLOW_ID_PREFIX, create_pizza_order
+from shared import TASK_QUEUE_NAME, WORKFLOW_ID_PREFIX, create_pizza_order, is_order_failed_key
 from temporalio.client import Client
+from temporalio.common import TypedSearchAttributes, SearchAttributePair
 from workflow import PizzaOrderWorkflow
 
 
@@ -17,6 +18,9 @@ async def main():
         order,
         id=WORKFLOW_ID_PREFIX + f"{order.order_number}",
         task_queue=TASK_QUEUE_NAME,
+        search_attributes=TypedSearchAttributes([
+            SearchAttributePair(is_order_failed_key, False)
+        ]),
     )
 
     result = await handle.result()

@@ -2,12 +2,13 @@ import asyncio
 from datetime import timedelta
 
 from temporalio import workflow
+from temporalio.common import TypedSearchAttributes, SearchAttributePair
 from temporalio.exceptions import ApplicationError
 
 # Import activity, passing it through the sandbox without reloading the module
 with workflow.unsafe.imports_passed_through():
     from activities import PizzaOrderActivities
-    from shared import Bill, OrderConfirmation, PizzaOrder
+    from shared import Bill, OrderConfirmation, PizzaOrder, is_order_failed_key
 
 
 @workflow.defn
@@ -29,7 +30,9 @@ class PizzaOrderWorkflow:
         )
 
         if order.is_delivery and distance.kilometers > 25:
-            workflow.upsert_search_attributes({"isOrderFailed": [True]})
+            workflow.upsert_search_attributes(TypedSearchAttributes([
+                SearchAttributePair(is_order_failed_key, True)
+            ]))
             error_message = "customer lives outside the service area"
             workflow.logger.error(error_message)
             raise ApplicationError(error_message)
@@ -48,7 +51,9 @@ class PizzaOrderWorkflow:
             amount=total_price,
         )
 
-        workflow.upsert_search_attributes({"isOrderFailed": [False]})
+        workflow.upsert_search_attributes(TypedSearchAttributes([
+            SearchAttributePair(is_order_failed_key, False)
+        ]))
 
         confirmation = await workflow.execute_activity_method(
             PizzaOrderActivities.send_bill,

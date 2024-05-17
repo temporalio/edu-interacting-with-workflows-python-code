@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from typing import List
+from temporalio.common import SearchAttributeKey
 
 TASK_QUEUE_NAME = "pizza-tasks"
 WORKFLOW_ID_PREFIX = "pizza-workflow-order-"
 
+is_order_failed_key = SearchAttributeKey.for_bool("isOrderFailed")
 
 @dataclass
 class Address:
