@@ -10,7 +10,7 @@ class GreetingComposer:
         self.client = client
 
     @activity.defn
-    async def compose_greeting(self) -> str:
+    async def compose_greeting(self):
         print("Completing activity asynchronously")
         asyncio.create_task(
             self.complete_greeting(activity.info().task_token)
@@ -32,9 +32,8 @@ class GreetingComposer:
 @workflow.defn
 class MyWorkflow:
     @workflow.run
-    async def run(self) -> List[str]:
+    async def run(self):
         workflow.logger.info("Running workflow.")
-        print("Running workflow.")
         return await workflow.execute_activity_method(
             GreetingComposer.compose_greeting,
             start_to_close_timeout=timedelta(seconds=10),
