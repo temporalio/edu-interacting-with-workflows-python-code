@@ -17,7 +17,7 @@ async def main():
     worker = Worker(
         client,
         task_queue=TASK_QUEUE_NAME,
-        workflows=[PizzaOrderWorkflow,FulfillOrderWorkflow],
+        workflows=[PizzaOrderWorkflow, FulfillOrderWorkflow],
         activities=[activities.get_distance, activities.send_bill, activities.make_pizzas, activities.deliver_pizzas],
     )
     logging.info(f"Starting the worker....{client.identity}")

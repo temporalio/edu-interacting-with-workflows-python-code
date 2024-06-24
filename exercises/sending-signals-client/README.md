@@ -33,7 +33,7 @@ Now you will add the `handle.signal()` call itself.
 
 1. Continue editing the `signalclient.py` file.
 2. After the line where you obtain your Workflow `handle` by running `get_workflow_handle()`, add another line with a call to `handle.signal()`. It should call the `submit_greeting` signal with an additional username argument like `User 1`. Don't forget to call `handle.signal()` with `await` because it is an asynchronous function.
-3. On the next line, add a call to `time.sleep(1)` to make this client wait before sending another signal.
+3. On the next line, add a call to `await asyncio.sleep(1)` to make this client wait before sending another signal.
 4. Finally, add a call to `await handle.signal("exit")`. This will send the other Signal type handled by this Workflow — `exit` — and cause it to return.
 
 ## Part D: Start Your Workflow
