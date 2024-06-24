@@ -21,7 +21,7 @@ async def main():
     )
 
     # Execute a workflow
-    await client.start_workflow(
+    await client.execute_workflow(
         FulfillOrderWorkflow.fulfill_order,
         order,
         id=FULFILLED_WORKFLOW_ID_PREFIX + f"{order.order_number}",
