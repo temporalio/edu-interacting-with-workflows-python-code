@@ -32,9 +32,6 @@ class MyWorkflow:
     # It should take an additional string argument called `name`.
     # When the signal is received, it should call await self._pending_greetings.put(name).
     # You can use the `exit()` Signal function below as a reference.
-    @workflow.signal
-    async def submit_greeting(self, name: str) -> None:
-        await self._pending_greetings.put(name)
 
     @workflow.signal
     def exit(self) -> None:
