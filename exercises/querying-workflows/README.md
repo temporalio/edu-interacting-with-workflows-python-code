@@ -61,7 +61,7 @@ It will produce the same result:
 
 ```
 Query result:
-["waiting for signal"]
+  QueryResult "waiting for signal"
 ```
 
 Now you can send a Signal to your Workflow so it completes successfully, or just terminate it.
