@@ -13,9 +13,10 @@ with workflow.unsafe.imports_passed_through():
 class PizzaOrderWorkflow:
     def __init__(self) -> None:
         self._pending_confirmation: asyncio.Queue[str] = asyncio.Queue()
+        self._signal_received: bool = False
 
     @workflow.run
-    async def order_pizza(self, order: PizzaOrder) -> OrderConfirmation:
+    async def order_pizza(self, order: PizzaOrder) -> OrderConfirmation | None:
         workflow.logger.info(f"order_pizza workflow invoked")
 
         address = order.address
@@ -37,30 +38,30 @@ class PizzaOrderWorkflow:
 
         workflow.logger.info(f"distance is {distance.kilometers}")
 
-        while True:
-            await workflow.wait_condition(
-                lambda: not self._pending_confirmation.empty()
-            )
+        await workflow.wait_condition(
+            lambda: self._signal_received,
+            timeout=3
+        )
 
-            while not self._pending_confirmation.empty():
-                bill = Bill(
-                    customer_id=order.customer.customer_id,
-                    order_number=order.order_number,
-                    description="Pizza order",
-                    amount=total_price,
-                )
-                confirmation = await workflow.execute_activity_method(
-                    PizzaOrderActivities.send_bill,
-                    bill,
-                    start_to_close_timeout=timedelta(seconds=5),
-                )
-                return confirmation
+        if not self._pending_confirmation.empty():
+            bill = Bill(
+                customer_id=order.customer.customer_id,
+                order_number=order.order_number,
+                description="Pizza order",
+                amount=total_price,
+            )
+            confirmation = await workflow.execute_activity_method(
+                PizzaOrderActivities.send_bill,
+                bill,
+                start_to_close_timeout=timedelta(seconds=5),
+            )
+            return confirmation
 
     # TODO Part A: Add a `fulfill_order_signal()` function to receive the Signal.
     # It should be decorated with `@workflow.signal` and accept an
     # additional boolean argument called `success`. When the signal is received,
-    # if `success==True`, it should call
-    # `self._pending_confirmation.put(True)
+    # it should set self._signal_received to `True` and call
+    # `self._pending_confirmation.put(success)
 
 
 @workflow.defn

@@ -14,17 +14,19 @@ the complete version in the `solution` subdirectory.
 
 ## Part A: Defining and Handling the Signal
 
-1. This exercise contains one Client that runs two different Workflows
-   — `PizzaWorkflow.order_pizza` and `FulfillOrderWorkflow.fulfill_order`. Both
-   Workflows are defined in `workflow.py`. `PizzaWorkflow.order_pizza` is
-   designed not to complete its final activity — `send_bill` — until it receives
-   a Signal from `FulfillOrderWorkflow.fulfill_order`. You'll start by defining
-   that Signal. Edit `workflow.py`. At the bottom of the `PizzaWorkflow`
+This exercise contains one Client that runs two different Workflows
+— `PizzaWorkflow.order_pizza` and `FulfillOrderWorkflow.fulfill_order`. Both
+Workflows are defined in `workflow.py`. `PizzaWorkflow.order_pizza` is
+designed not to complete its final activity — `send_bill` — until it receives
+a Signal from `FulfillOrderWorkflow.fulfill_order`. You'll start by defining
+that Signal. 
+
+1. Edit `workflow.py`. At the bottom of the `PizzaWorkflow`
    definition, add a Signal function for `fulfill_order_signal()`. It should be
    decorated with `@workflow.signal` and take an additional boolean argument
    called `success`. When the signal is received, if `success==True`, it should
-   call `self._pending_confirmation.put(True)`, enabling the `PizzaWorkflow` to
-   compelete.
+   set self._signal_received to `True` and call `await self._pending_confirmation.put(success)`,
+   enabling the `PizzaWorkflow` to compelete.
 2. Save the file.
 
 ## Part B: Getting a Handle on your Workflow
@@ -47,7 +49,8 @@ Now you will add the `handle.signal()` call itself.
    the `PizzaWorkflow`. Directly after the `client.start_workflow()` call for
    the `PizzaWorkflow`, add another call that starts the `FulfillOrderWorkflow`.
    You can use the call that starts the `PizzaWorkflow` as a reference. It can
-   use the same Task Queue, but needs to use a different Workflow ID. 
+   use the same Task Queue, but needs to use a different Workflow ID. Also, you
+   don't need the handle because you don't need to await it or use its return value.
 2. Save and close the file.
 
 ## Part E: Running both Workflows

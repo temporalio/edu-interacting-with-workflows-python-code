@@ -23,6 +23,8 @@ async def main():
     # TODO Part D: Start the `FulfillOrderWorkflow`.
     # You can use the `PizzaOrderWorkflow` above as a reference.
     # It can use the same Task Queue, but needs to use a different Workflow ID.
+    # Also, you don't need the handle because you don't
+    # need to await it or use its return value.
 
     result = await handle.result()
 

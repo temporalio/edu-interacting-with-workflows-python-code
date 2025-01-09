@@ -53,13 +53,13 @@ async def main():
     # Run a worker for the workflow
     async with Worker(
         client,
-        task_queue="queries",
+        task_queue="queries-queue",
         workflows=[MyWorkflow],
     ):
         result = await client.execute_workflow(
             MyWorkflow.run,
             id="queries",
-            task_queue="queries",
+            task_queue="queries-queue",
         )
         print(f"Result: {result}")
 
