@@ -16,7 +16,10 @@ the complete version in the `solution` subdirectory.
 
 In this part of the exercise, you will define your Query.
 
-1. Edit the `workflow.py` file. The Workflow runs a blocking `while True` loop that will cause it to wait for either the `exit()` Signal or a `submit_greeting()` Signal before doing anything. A variable called `self._current_state` that provides information about the Workflow Execution is also updated in several places. You will add a Query that returns the status of this variable.
+1. Edit the `workflow.py` file.
+
+The Workflow runs a blocking `while True` loop that will cause it to wait for either the `exit()` Signal or a `submit_greeting()` Signal before doing anything. A variable called `self._current_state` that provides information about the Workflow Execution is also updated in several places. You will add a Query that returns the status of this variable.
+
 2. Anywhere within the Workflow definition (for example, just before your Signal functions), add a Query function called `current_state_query()`. It should be annotated with `@workflow.query` and `return self._current_state`.
 3. Save the file.
 
@@ -73,5 +76,12 @@ In the terminal you ran your query in, run `python signalclient.py`. It will sen
 ```
 Result: ['Hello, User 1']
 ```
+
+Notice that because `workflow.py` shuts down the Worker when
+the Workflow finishes, you cannot Query the Workflow after you
+have Signalled it to exit. In contrast, if you ran the Worker
+in one file/terminal and the Workflow in another, the Workflow
+would shut down and the Worker would keep running, and you could
+Query it even after it has exited.
 
 ### This is the end of the exercise.
