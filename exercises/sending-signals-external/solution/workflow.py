@@ -12,7 +12,7 @@ with workflow.unsafe.imports_passed_through():
 @workflow.defn
 class PizzaOrderWorkflow:
     def __init__(self) -> None:
-        self._pending_confirmation: asyncio.Queue[str] = asyncio.Queue()
+        self._pending_confirmation: asyncio.Queue[bool] = asyncio.Queue()
         self._signal_received: bool = False
 
     @workflow.run
@@ -43,7 +43,7 @@ class PizzaOrderWorkflow:
             timeout=3
         )
 
-        if not self._pending_confirmation.empty():
+        if not self._pending_confirmation.get_nowait():
             bill = Bill(
                 customer_id=order.customer.customer_id,
                 order_number=order.order_number,
