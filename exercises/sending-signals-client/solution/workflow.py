@@ -16,7 +16,7 @@ class MyWorkflow:
     async def run(self) -> List[str]:
         greetings: List[str] = []
         workflow.logger.info("Running workflow.")
-        print("Running workflow.")
+
         while True:
             await workflow.wait_condition(
                 lambda: not self._pending_greetings.empty() or self._exit

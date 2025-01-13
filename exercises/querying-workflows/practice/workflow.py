@@ -33,9 +33,6 @@ class MyWorkflow:
 
     # TODO Part A: Define a query function called `current_state_query()`.
     # It should be annotated with @workflow.query and return self._current_state.
-    @workflow.query
-    def current_state_query(self) -> str:
-        return self._current_state
 
     @workflow.signal
     async def submit_greeting(self, name: str) -> None:
@@ -53,13 +50,13 @@ async def main():
     # Run a worker for the workflow
     async with Worker(
         client,
-        task_queue="queries",
+        task_queue="queries-queue",
         workflows=[MyWorkflow],
     ):
         result = await client.execute_workflow(
             MyWorkflow.run,
             id="queries",
-            task_queue="queries",
+            task_queue="queries-queue",
         )
         print(f"Result: {result}")
 

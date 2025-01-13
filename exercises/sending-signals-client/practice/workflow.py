@@ -16,7 +16,7 @@ class MyWorkflow:
     async def run(self) -> List[str]:
         greetings: List[str] = []
         workflow.logger.info("Running workflow.")
-        print("Running workflow.")
+
         while True:
             await workflow.wait_condition(
                 lambda: not self._pending_greetings.empty() or self._exit
@@ -28,7 +28,7 @@ class MyWorkflow:
             if self._exit:
                 return greetings
 
-    # TODO Part A: Define a Signal function, annoted with @workflow.signal.
+    # TODO Part A: Define a Signal function named submit_greeting, annoted with @workflow.signal.
     # It should take an additional string argument called `name`.
     # When the signal is received, it should call await self._pending_greetings.put(name).
     # You can use the `exit()` Signal function below as a reference.
