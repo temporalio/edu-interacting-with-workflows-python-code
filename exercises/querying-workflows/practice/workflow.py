@@ -33,9 +33,6 @@ class MyWorkflow:
 
     # TODO Part A: Define a query function called `current_state_query()`.
     # It should be annotated with @workflow.query and return self._current_state.
-    @workflow.query
-    def current_state_query(self) -> str:
-        return self._current_state
 
     @workflow.signal
     async def submit_greeting(self, name: str) -> None:
